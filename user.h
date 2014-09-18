@@ -50,6 +50,7 @@ public:
 
     void add_book();            // 新书上架
     void add_user();            // 增加新用户
+    void all_book();            // 查看所有书籍信息
     void all_user();            // 查看所有用户信息
     void del_book();            // 旧书下架
     void del_user();            // 删除用户

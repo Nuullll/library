@@ -42,7 +42,9 @@ public:
     bool on_shelf() { return on_shelf_; }
     bool return(int reader_id);     // 读者归还
     bool wanted(int reader_id);     // 有读者需要, 若在架上则成功借出, 否则变更相关状态.
+    int days() { return days_; }
     int index() { return index_; }
+    int state(int reader_id);       // 返回该读者与此书间的借阅状态
     std::string isbn() { return isbn_; }
     std::string name() { return name_; }
     std::vector<Info> info() { return info_; }

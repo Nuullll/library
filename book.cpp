@@ -13,3 +13,13 @@ Book::Book(std::string isbn, std::string name, int days)
             ++index_;
     }
 }
+
+int Book::state(int reader_id)
+{
+    for (std::vector<Info>::iterator it = info_.begin(); it != info_.end(); ++it)
+    {
+        if (it->reader == reader_id)
+            return it->state;
+    }
+    return -1;      // 无借阅关系
+}

@@ -4,6 +4,7 @@
 
 #include "global.h"
 #include <conio.h>
+#include "file.h"
 
 void User::set_password()
 {
@@ -57,6 +58,14 @@ std::ofstream &operator <<(std::ofstream &out, const Administrator &admin)
     return out;
 }
 
+void Administrator::update()
+{
+    Remove(admins, id_);
+    admins.push_back(*this);
+    WriteAll();
+    return;
+}
+
 std::ifstream &operator >>(std::ifstream &in, Reader &reader)
 {
     in >> reader.identity_;
@@ -104,4 +113,23 @@ std::ofstream &operator <<(std::ofstream &out, const Reader &reader)
         out << *it;
     out << "#\n\n";
     return out;
+}
+
+std::vector<Book> Reader::books(int state)
+{
+    std::vector<Book> v;
+    for (std::vector<Book>::iterator it = books_.begin(); it != books_.end(); ++it)
+    {
+        if (it->state(id_) == state)
+            v.push_back(*it);
+    }
+    return v;
+}
+
+void Reader::update()
+{
+    Remove(readers, id_);
+    readers.push_back(*this);
+    WriteAll();
+    return;
 }

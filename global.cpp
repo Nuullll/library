@@ -106,6 +106,17 @@ void ClearScreen()
     Title();
 }
 
+void Wait(int seconds)
+{
+    for (int i = 0; i < seconds * 60000000; ++i)
+        ;
+}
+
+void Welcome()
+{
+    
+}
+
 void Title()
 {
     HighlightPrint("%50s\n\n", "图书管理系统 v1.60.1");
