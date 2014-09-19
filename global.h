@@ -5,6 +5,7 @@
 #include <vector>
 #include "user.h"
 #include <cmath>
+#include <thread>
 
 extern std::vector<User*> users;
 extern std::vector<Administrator> admins;
@@ -16,25 +17,26 @@ const int DOWN = 80;
 const int LEFT = 75;
 const int RIGHT = 77;
 
-int GetX();         // 获取光标x坐标
-int GetY();         // 获取光标y坐标
-void GotoXY(int x, int y);  // 将光标移至(x,y)位置
-std::string GetPass();      // 输入密码
-std::string Decode(int id, std::string cipher); // 解密
+const int WIDTH = 80;
+
+bool CompareHot(Book b1, Book b2);
+bool HighlightPrint(int setw, std::string text, int color);
+bool HighlightPrint(std::string text, int color = 9);
 bool ValidPassword(std::string pwd);    // 检查是否符合6~15位数字字母密码标准
-Token Login();              // 登录, 返回令牌
-void Logout();
-bool HighlightPrint(char* s_format, std::string text, int color = 9);
-void ClearScreen();         // 保留标题的清屏函数
-void Wait(int seconds = 1); // 暂停seconds
-void Scroll(std::string text);  // 滚动播放文本
-void Welcome();             // 欢迎界面
-void Exit();                // 退出系统
-void Title();               // 系统标题
-int Find(std::vector<User*> v, int id);     // 返回vector中找到的索引, 未找到则返回-1
 int Find(std::vector<Book> v, std::string isbn, int index);
+int Find(std::vector<User*> v, int id);     // 返回vector中找到的索引, 未找到则返回-1
+std::string Decode(int id, std::string cipher); // 解密
+std::string GetPass();      // 输入密码
+std::vector<Book> HotBook(int num = 3);    // 借阅排行榜
+Token Login();              // 登录, 返回令牌
+void ClearScreen();         // 保留标题的清屏函数
+void EBook();               // 电子资源界面
+void Exit();                // 退出系统
+void MediatePrint(std::string text);    // 居中打印字符串
 void Remove(std::vector<Book> &v, std::string isbn, int index);
-std::vector<Book> HotBook(int num);    // 借阅排行榜
+void Scroll(std::string text);  // 滚动播放文本
+void Title();               // 系统标题
+void Welcome();             // 欢迎界面
 
 template <class T>
 std::string Encode(T user)      // 加密

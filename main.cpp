@@ -108,15 +108,15 @@ login:                          // 登录标签
                             mp["旧书下架"] = 8;
                             switch (mp[now.options[k].first])
                             {
-                                case 0: admin.set_password(), break;
-                                case 1: Logout(), break;
-                                case 2: Exit(), break;
-                                case 3: admin.all_user(), break;
-                                case 4: admin.add_user(), break;
-                                case 5: admin.del_user(), break;
-                                case 6: admin.all_book(), break;
-                                case 7: admin.add_book(), break;
-                                case 8: admin.del_book(), break;
+                                case 0: admin.set_password(); break;
+                                case 1: goto login;
+                                case 2: Exit(); break;
+                                case 3: admin.all_user(); break;
+                                case 4: admin.add_user(); break;
+                                case 5: admin.del_user(); break;
+                                case 6: admin.all_book(); break;
+                                case 7: admin.add_book(); break;
+                                case 8: admin.del_book(); break;
                             }
                             k = 0;
                             break;
@@ -195,14 +195,14 @@ login:                          // 登录标签
                             mp["电子资源"] = 7;
                             switch (mp[now.options[k].first])
                             {
-                                case 0: reader.return(), break;
-                                case 1: reader.history(), break;
-                                case 2: reader.set_password(), break;
-                                case 3: Logout(), break;
-                                case 4: Exit(), break;
-                                case 5: reader.search(), break;
-                                case 6: reader.recommended(), break;
-                                case 7: EBook(), break;
+                                case 0: reader.return(); break;
+                                case 1: reader.history(); break;
+                                case 2: reader.set_password(); break;
+                                case 3: goto login;
+                                case 4: Exit(); break;
+                                case 5: reader.search(); break;
+                                case 6: reader.recommended(); break;
+                                case 7: EBook(); break;
                             }
                             k = 0;
                             break;

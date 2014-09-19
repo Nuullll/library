@@ -4,58 +4,53 @@
 
 #include <stdlib.h>
 #include <windows.h>
+#include <algorithm>
+#include <iomanip>
 
-int GetX()
+bool CompareHot(Book b1, Book b2)
 {
-    HANDLE hStdout;
-    CONSOLE_SCREEN_BUFFER_INFO pBuffer;
-    hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hStdout, &pBuffer);
-    return pBuffer.dwCursorPosition.X;
+    return (b1.info().size() > b2.info().size());
 }
 
-int GetY()
+bool HighlightPrint(int setw, std::string text, int color = 9)
 {
-    HANDLE hStdout;
-    CONSOLE_SCREEN_BUFFER_INFO pBuffer;
-    hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hStdout, &pBuffer);
-    return pBuffer.dwCursorPosition.Y;
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (handle == 0)
+        return false;
+    BOOL ret = SetConsoleTextAttribute(handle, WORD(color));
+    std::cout << std::setw(setw) << text;
+    ret = SetConsoleTextAttribute(handle, WORD(7));
+    return (ret == true);
 }
 
-void GotoXY(int x, int y)
+bool HighlightPrint(std::string text, int color = 9) 
 {
-    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;                            
-    HANDLE hConsoleOut;
-    hConsoleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleScreenBufferInfo(hConsoleOut,&csbiInfo);
-    csbiInfo.dwCursorPosition.X = x;                                    
-    csbiInfo.dwCursorPosition.Y = y;                                    
-    SetConsoleCursorPosition(hConsoleOut,csbiInfo.dwCursorPosition); 
+    return HighlightPrint((WIDTH + text.size()) / 2, text, color);
 }
 
-std::string GetPass()
+bool ValidPassword(std::string pwd)
 {
-    std::string pwd;
-    char tmp;
-    while ((tmp = getch()) != 13)
+    return ((pwd.size() >= 6) && (pwd.size() <= 15));
+}
+
+int Find(std::vector<Book> v, std::string isbn, int index)
+{
+    for (int i = 0; i < v.size(); ++i)
     {
-        if (tmp == 8)   // backspace
-        {
-            if (pwd.size() == 0)
-                continue;
-            pwd.erase(pwd.end() - 1);   // 删除末位
-            int x = GetX(), y = GetY(); // 清掉屏幕上的一个'*'
-            GotoXY(x - 1, y);
-            std::cout << ' ';
-            GotoXY(x - 1, y);
-            continue;
-        }
-        pwd.append(1, tmp);
-        std::cout << '*';
+        if ((v[i].isbn() == isbn) && (v[i].index() == index))
+            return i;
     }
-    std::cout << '\n';
-    return pwd;
+    return -1;
+}
+
+int Find(std::vector<User*> v, int id)
+{
+    for (int i = 0; i < v.size(); ++i)
+    {
+        if (v[i]->id() == id)
+            return i;
+    }
+    return -1;
 }
 
 std::string Decode(int id, std::string cipher)
@@ -78,26 +73,115 @@ std::string Decode(int id, std::string cipher)
     return clear;
 }
 
-bool ValidPassword(std::string pwd)
+std::string GetPass()
 {
-    for (int i = 0; i < pwd.size(); i++)
+    int c;
+    std::string password;
+    std::string::iterator it = password.end();
+    while ((c = getch()) != '\r')
     {
-        char ch = pwd[i];
-        if (!((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')))
-            return false;
+        switch (c)
+        {
+        case 0: 
+            {
+                getch();
+                std::cout << '\a';
+                break;
+            }
+        case 224: 
+            {
+                switch (getch())
+                {
+                case 75: // left
+                    {
+                        if (it != password.begin())
+                        {
+                            --it;
+                            std::cout << '\b';
+                        }
+                        else 
+                            std::cout << '\a';
+                        break;
+                    }
+                case 77: // right
+                    {
+                        if (it != password.end())
+                        {
+                            ++it;
+                            std::cout << '*';
+                        }
+                        else
+                            std::cout << '\a';
+                        break;
+                    }
+                default: 
+                    {
+                        std::cout << '\a';
+                        break;
+                    }
+                }
+                break;
+            }
+        case 163: 
+            {
+                getch();
+                std::cout << '\a';
+                break;
+            }
+        case '\b':
+            {
+                if (password.size() != 0 && it != password.begin())
+                {
+                    std::cout << '\b';
+                    for (int i = 0; i < password.end() - it; ++i)
+                        std::cout << '*';
+                    std::cout << ' ';
+                    for (int i = 0; i < password.end() - it + 1; ++i)
+                        std::cout << '\b';
+                    password.erase(it - 1);
+                    --it;
+                }
+                else
+                    std::cout << '\a';
+                break;
+            }
+        default:
+            {
+                if (isalnum(c) || ispunct(c))
+                {
+                    password.insert(it, c);
+                    ++it;
+                    for (int i = 0; i < password.end() - it + 1; ++i)
+                        std::cout << '*';
+                    for (int i = 0; i < password.end() - it; ++i)
+                        std::cout << '\b';
+                }
+                else
+                    std::cout << '\a';
+                break;
+            }
+        }
     }
-    return ((pwd.size() >= 6) && (pwd.size() <= 15));
+    std::cout << std::endl;
+    return password;
 }
 
-bool HighlightPrint(char* s_format, std::string text, int color = 9) 
+std::vector<Book> HotBook(int num)
 {
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (handle == 0)
-        return false;
-    BOOL ret = SetConsoleTextAttribute(handle, WORD(color));
-    printf(s_format, text.c_str());
-    ret = SetConsoleTextAttribute(handle, WORD(7));
-    return (ret == true);
+    std::sort(all_books.begin(), all_books.end(), CompareHot);
+    return std::vector<Book>(all_books.begin(), all_books.begin() + num + 1);
+}
+
+Token Login()
+{
+    printf("%44s\n", "请登录...");
+    int id;
+    std::string pwd;
+    printf("%51s", "请输入您的学号(工号): ");
+    std::cin >> id;
+    printf("%48s", "请输入您的密码: ");
+    pwd = GetPass();
+    return Token(id, pwd);
 }
 
 void ClearScreen()
@@ -106,40 +190,26 @@ void ClearScreen()
     Title();
 }
 
-void Wait(int seconds)
+void EBook()
 {
-    for (int i = 0; i < seconds * 60000000; ++i)
-        ;
+    HighlightPrint("请登录 http://lib.tsinghua.edu.cn 访问查阅电子资源库!");
 }
 
-void Welcome()
+void Exit()
 {
-    
-}
-
-void Title()
-{
-    HighlightPrint("%50s\n\n", "图书管理系统 v1.60.1");
-}
-
-int Find(std::vector<User*> v, int id)
-{
-    for (int i = 0; i < v.size(); ++i)
+    ClearScreen();
+    MediatePrint("确认退出? [y/n] \n");
+    char ch = getch();
+    if (ch == 'y' || ch == 'Y')
     {
-        if (v[i]->id() == id)
-            return i;
+        MediatePrint("再见! \n");
+        exit(1);
     }
-    return -1;
 }
 
-int Find(std::vector<Book> v, std::string isbn, int index)
+void MediatePrint(std::string text)
 {
-    for (int i = 0; i < v.size(); ++i)
-    {
-        if ((v[i].isbn() == isbn) && (v[i].index() == index))
-            return i;
-    }
-    return -1;
+    std::cout << std::setw((WIDTH + text.size()) / 2) << text;
 }
 
 void Remove(std::vector<Book> &v, std::string isbn, int index)
@@ -152,4 +222,14 @@ void Remove(std::vector<Book> &v, std::string isbn, int index)
             break;
         }
     }
+}
+
+void Title()
+{
+    HighlightPrint("图书管理系统 v1.60.1");
+}
+
+void Welcome()
+{
+    
 }

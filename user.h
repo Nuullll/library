@@ -75,7 +75,11 @@ public:
     int credit() { return credit_; }
     std::string name() { return name_; }
     std::vector<Book> books(int state);
+    void history();     // 借阅历史界面
     void print() { printf("%40s", "读者"), std::cout << id_ << ": " << name_ << std::endl; }
+    void recommended(); // 馆长推荐界面
+    void return();      // 读者还书界面
+    void search();      // 搜索书籍界面
     void update();
 
 private:
