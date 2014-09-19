@@ -104,12 +104,12 @@ void add_user()
     std::cin >> new_name;
     MediatePrint("正在打印密码单...请稍候...\n");
     std::string space(10, ' ');
-    std::cout << space << '|' << std::setw(58) << '-' << '|' << std::endl;
+    std::cout << space << '|' << string(58,'-') << '|' << std::endl;
     std::cout << space << '|' << std::setw(59) << '|' << std::endl;
     std::cout << space << '|' << space + space << "ID: " << new_id << std::setw(34 - int(log10(new_id))) << '|' << std::endl;
     std::cout << space << '|' << space + space << "密码: " << RandomPass(6) << std::setw(27) << '|' << std::endl;
     std::cout << space << '|' << std::setw(59) << '|' << std::endl;
-    std::cout << space << '|' << std::setw(58) << '-' << '|' << std::endl << std::endl;
+    std::cout << space << '|' << string(58,'-') << '|' << std::endl << std::endl;
 }
 
 void all_user()
