@@ -6,6 +6,7 @@
 #include "user.h"
 #include <cmath>
 #include <thread>
+#include <chrono>
 
 extern std::vector<User*> users;
 extern std::vector<Administrator> admins;
@@ -36,6 +37,7 @@ void MediatePrint(std::string text);    // 居中打印字符串
 void Remove(std::vector<Book> &v, std::string isbn, int index);
 void Scroll(std::string text);  // 滚动播放文本
 void Title();               // 系统标题
+void Wait(int milliseconds);  // 等待毫秒数
 void Welcome();             // 欢迎界面
 
 template <class T>

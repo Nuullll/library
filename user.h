@@ -5,6 +5,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include "book.h"
 
@@ -54,7 +55,7 @@ public:
     void all_user();            // 查看所有用户信息
     void del_book();            // 旧书下架
     void del_user();            // 删除用户
-    void print() { printf("%40s", "管理员: "), std::cout << id_ << std::endl; }
+    void print() { std::cout << std::setw(40) << "管理员: " << id_ << std::endl; }
     void update();
 
 private:
@@ -76,7 +77,7 @@ public:
     std::string name() { return name_; }
     std::vector<Book> books(int state);
     void history();     // 借阅历史界面
-    void print() { printf("%40s", "读者"), std::cout << id_ << ": " << name_ << std::endl; }
+    void print() { std::cout << std::setw(40) << "管理员: " << id_ << ": " << name_ << "当前信用积分: " << credit_ << std::endl; }
     void recommended(); // 馆长推荐界面
     void return();      // 读者还书界面
     void search();      // 搜索书籍界面

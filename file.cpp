@@ -32,10 +32,27 @@ void ReadReaders()
         readers.push_back(tmp);
 }
 
+void ReadUsers()
+{
+    users.clear();
+    User* tmp;
+    for (std::vector<Administrator>::iterator it = admins.begin(); it != admins.end(); ++it)
+    {
+        tmp = &*it;
+        users.push_back(tmp);
+    }
+    for (std::vector<Reader>::iterator it = readers.begin(); it != readers.end(); ++it)
+    {
+        tmp = &*it;
+        users.push_back(tmp);
+    }
+}
+
 void ReadAll()
 {
     ReadAdmins();
     ReadReaders();
+    ReadUsers();
     ReadBooks();
 }
 

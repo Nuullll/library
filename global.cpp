@@ -229,6 +229,11 @@ void Title()
     HighlightPrint("图书管理系统 v1.60.1");
 }
 
+void Wait(int milliseconds)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+}
+
 void Welcome()
 {
     
