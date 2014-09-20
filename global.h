@@ -22,9 +22,12 @@ const int RIGHT = 77;
 
 const int WIDTH = 80;
 
+const int SECONDS_A_DAY = 24 * 3600;
+
 bool CompareHot(Book b1, Book b2);
 bool HighlightPrint(int setw, std::string text, int color);
 bool HighlightPrint(std::string text, int color = 9);
+bool IsChineseChar(unsigned char lo, unsigned char hi);
 bool ValidPassword(std::string pwd);    // 检查是否符合6~15位数字字母密码标准
 int Find(std::vector<Book> v, std::string isbn, int index);
 int Find(std::vector<User*> v, int id);     // 返回vector中找到的索引, 未找到则返回-1
@@ -39,6 +42,7 @@ void EBook();               // 电子资源界面
 void Exit();                // 退出系统
 void MediatePrint(std::string text);    // 居中打印字符串
 void PrintBooks(std::vector<Book> v);
+void PrintBooksOfReader(std::vector<Book> v, int reader_id);
 void Remove(std::vector<Book> &v, std::string isbn, int index);
 void Remove(std::vector<Book> &v, std::vector<Book> dels);
 void Scroll(std::string text);  // 滚动播放文本

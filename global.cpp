@@ -29,6 +29,17 @@ bool HighlightPrint(std::string text, int color = 9)
     return HighlightPrint((WIDTH + text.size()) / 2, text, color);
 }
 
+bool IsChineseChar(unsigned char lo, unsigned char hi)
+{
+    if (lo < 0x81 || lo > 0xFE)
+        return false;
+    if (lo >= 0xA1 && lo <= 0xA9)
+        return false;
+    if (hi < 0x40 || hi == 0xFF || hi == 0x7F)
+        return false;
+    return true;
+}
+
 bool ValidPassword(std::string pwd)
 {
     return ((pwd.size() >= 6) && (pwd.size() <= 15));
@@ -244,6 +255,18 @@ void PrintBooks(std::vector<Book> v)
     for (std::vector<Book>::iterator it = v.begin(); it != v.begin(); ++it)
     {
         it->print();
+        std::cout << seperator << std::endl;
+    }
+    return;
+}
+
+void PrintBooksOfReader(std::vector<Book> v, int reader_id)
+{
+    std::string seperator(80, '-');
+    for (std::vector<Book>::iterator it = v.begin(); it != v.end(); ++it)
+    {
+        it->print();
+        it->info(reader_id).print();
         std::cout << seperator << std::endl;
     }
     return;

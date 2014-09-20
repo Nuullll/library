@@ -6,11 +6,12 @@
 #include <conio.h>
 #include "file.h"
 #include <cmath>
+#include "menu.h"
 
 void User::set_password()
 {
     ClearScreen();
-    std::cout << std::setw(40) << "请输入密码: ";
+    std::cout << std::setw(WIDTH / 2) << "请输入密码: ";
     std::string origin = GetPass();
     if (origin != password_)
     {
@@ -18,7 +19,7 @@ void User::set_password()
         getch();
         return;
     }
-    std::cout << std::setw(40) << "新密码: ";
+    std::cout << std::setw(WIDTH / 2) << "新密码: ";
     std::string new_pwd = GetPass();
     if (!ValidPassword(new_pwd))
     {
@@ -26,7 +27,7 @@ void User::set_password()
         getch();
         return;
     }
-    std::cout << std::setw(40) << "重复新密码: ";
+    std::cout << std::setw(WIDTH / 2) << "重复新密码: ";
     std::string confirm = GetPass();
     if (new_pwd != confirm)
     {
@@ -59,10 +60,10 @@ std::ofstream &operator <<(std::ofstream &out, const Administrator &admin)
     return out;
 }
 
-void add_user()
+void Administrator::add_user()
 {
     ClearScreen();
-    std::vector<int> identities;
+    std::vector<std::string> identities;
     identities.push_back("管理员");
     identities.push_back("读者");
     int k = 0;
@@ -98,7 +99,7 @@ void add_user()
         if (new_id <= (*it)->id())
             new_id = (*it)->id() + 1;
     }
-    std::cout << std::setw(40) << "ID: " << new_id << std::endl;
+    std::cout << std::setw(WIDTH / 2) << "ID: " << new_id << std::endl;
     std::string new_pwd = RandomPass();
     MediatePrint("正在打印密码单...请稍候...\n\n");
     std::string space(10, ' ');
@@ -123,7 +124,7 @@ void add_user()
     }
     else        // 读者
     {
-        std::cout << std::setw(40) << "姓名: ";
+        std::cout << std::setw(WIDTH / 2) << "姓名: ";
         std::string new_name;
         std::cin >> new_name;
         Reader new_reader(new_id, new_pwd, new_name);
@@ -133,10 +134,10 @@ void add_user()
     return;
 }
 
-void del_user()
+void Administrator::del_user()
 {
     ClearScreen();
-    std::cout << std::setw(40) << "学号(工号): ";
+    std::cout << std::setw(WIDTH / 2) << "学号(工号): ";
     int del_id;
     if (!(std::cin >> del_id))
     {
@@ -160,12 +161,20 @@ void del_user()
     else
     {
         users[index]->print();
+        Reader reader = readers[Find(readers, del_id)];
+        if (reader.books(HOLDING).size() != 0 || reader.books(WANTED).size() != 0 || reader.books(OVERDUE).size() != 0)
+        {
+            HighlightPrint("该用户还有书未还! 删除失败!\n");
+            getch();
+            return;
+        }
         MediatePrint("确认删除? [y/n] ");
         char tmp = getch();
         if (tmp == 'y' || tmp == 'Y')
         {
             Remove(readers, del_id);
             WriteReaders();
+            ReadAll();
             MediatePrint("用户删除成功!\n")
             getch();
             return;
@@ -176,18 +185,18 @@ void del_user()
     }
 }
 
-void all_book()
+void Administrator::all_book()
 {
     PrintBooks(all_books);
     getch();
     return;
 }
 
-void add_book()
+void Administrator::add_book()
 {
     ClearScreen();
     std::string new_isbn, new_name, new_author, new_publish;
-    std::cout << std::setw(40) << "ISBN: ";
+    std::cout << std::setw(WIDTH / 2) << "ISBN: ";
     std::cin >> new_isbn;
     if (new_isbn.size() != 10)
     {
@@ -204,11 +213,11 @@ void add_book()
             return;
         }
     }
-    std::cout << std::setw(40) << "书名: ";
+    std::cout << std::setw(WIDTH / 2) << "书名: ";
     getline(std::cin, new_name);
-    std::cout << std::setw(40) << "作者: ";
+    std::cout << std::setw(WIDTH / 2) << "作者: ";
     getline(std::cin, new_author);
-    std::cout << std::setw(40) << "出版信息: ";
+    std::cout << std::setw(WIDTH / 2) << "出版信息: ";
     getline(std::cin, new_publish);
     Book new_book(new_isbn, new_name, new_author, new_publish);
     new_book.update();
@@ -217,11 +226,11 @@ void add_book()
     return;
 }
 
-void del_book()
+void Administrator::del_book()
 {
     ClearScreen();
     std::string del_isbn;
-    std::cout << std::setw(40) << "ISBN: ";
+    std::cout << std::setw(WIDTH / 2) << "ISBN: ";
     std::cin >> del_isbn;
     std::vector<Book> rst = Find(all_books, del_isbn);
     if (rst.size() == 0)
@@ -235,8 +244,22 @@ void del_book()
     char tmp = getch();
     if (tmp == 'y' || tmp == 'Y')
     {
+        for (std::vector<Book>::iterator it = rst.begin(); it != rst.end(); ++it)
+        {
+            std::vector<Info> tmp = it->info();
+            for (std::vector<Info>::iterator iter = tmp.begin(); iter != tmp.end(); ++iter)
+            {
+                if (iter->state == HOLDING || iter->state == WANTED || iter->state == OVERDUE)
+                {
+                    HighlightPrint("该书仍未被归还! 删除失败!\n");
+                    getch();
+                    return;
+                }
+            }
+        }
         Remove(all_books, rst);
         WriteBooks();
+        ReadAll();
         MediatePrint("删除成功!\n");
         getch();
         return;
@@ -254,14 +277,26 @@ void del_book()
         getch();
         return;
     }
+    Book tmp = all_books[Find(all_books, del_isbn, del_index)];
+    std::vector<Info> info = tmp.info();
+    for (std::vector<Info>::iterator it = info.begin(); it != info.end(); ++it)
+    {
+        if (it->state == HOLDING || it->state == WANTED || it->state == OVERDUE)
+        {
+            HighlightPrint("该书仍未被归还! 删除失败!\n");
+            getch();
+            return;
+        }
+    }
     Remove(all_books, del_isbn, del_index);
     WriteBooks();
+    ReadAll();
     MediatePrint("删除成功!\n");
     getch();
     return;
 }
 
-void all_user()
+void Administrator::all_user()
 {
     ClearScreen();
     for (std::vector<User*>::iterator it = users.begin(); it != users.end(); ++it)
@@ -274,7 +309,8 @@ void Administrator::update()
 {
     Remove(admins, id_);
     admins.push_back(*this);
-    WriteAll();
+    WriteAdmins();
+    ReadAll();
     return;
 }
 
@@ -338,10 +374,245 @@ std::vector<Book> Reader::books(int state)
     return v;
 }
 
+bool Reader::change_state(Book book, int state)
+{
+    for (std::vector<Book>::iterator it = books_.begin(); it != books_.end(); ++it)
+    {
+        if (*it == book)
+        {
+            it->change_state(id_, state);
+            return true;
+        }
+    }
+    return false;
+}
+
+std::vector<Book> Reader::books(int state)
+{
+    std::vector<Book> rst;
+    for (std::vector<Book>::iterator it = books_.begin(); it != books_.end(); ++it)
+    {
+        if (it->info(id_).state == state)
+            rst.push_back(*it);
+    }
+    return rst;
+}
+
+void Reader::history()
+{
+    ClearScreen();
+    PrintBooksOfReader(books(RETURNED), id_);
+    getch();
+    return;
+}
+
+void Reader::recommended()
+{
+    ClearScreen();
+    std::vector<Book> recommended = HotBook(5);
+    if (recommended.size() == 0)
+    {
+        MediatePrint("馆长还没有推荐什么好书哦!\n");
+        getch();
+        return;
+    }
+    std::vector<std::string> book_names;
+    for (std::vector<Book>::iterator it = recommended.begin(); it != recommended.end(); ++it)
+    {
+        book_names.push_back(it->name());
+    }
+    int k = 0;
+    while (true)
+    {
+        ClearScreen();
+        for (int i = 0; i < book_names.size(); ++i)
+        {
+            if (i == k)
+            {
+                HighlightPrint(book_names[i] + '\n');
+                continue;
+            }
+            MediatePrint(book_names[i] + '\n');
+        }
+        int ch = getch();
+        if (ch == 13)
+        {
+            ClearScreen();
+            Book target = recommended[k];
+            target.print();
+            target.display_now_state();
+            MediatePrint("借阅/预约此书? [y/n] ");
+            int tmp = getch();
+            if (tmp == 'y' || tmp == 'Y')
+            {
+                target.wanted(id_);
+            }
+        }
+        while (ch != 224)
+            ;
+        switch (getch())
+        {
+            case UP:
+            {
+                if (--k < 0)
+                    k = book_names.size() - 1;
+                break;
+            }
+            case DOWN:
+            {
+                if (++k > book_names.size() - 1)
+                    k = 0;
+                break;
+            }
+            default: break;
+        }
+    }
+    getch();
+    return;
+}
+
+void Reader::give_back()
+{
+    ClearScreen();
+    std::vector<Book> can_return;
+    std::vector<Book> tmp = books(HOLDING);
+    can_return.insert(can_return.end(), tmp.begin(), tmp.end());
+    tmp = books(WANTED);
+    can_return.insert(can_return.end(), tmp.begin(), tmp.end());
+    tmp = books(OVERDUE);
+    can_return.insert(can_return.end(), tmp.begin(), tmp.end());
+    std::vector<std::string> book_names;
+    for (std::vector<Book>::iterator it = can_return.begin(); it != can_return.end(); ++it)
+    {
+        book_names.push_back(it->name());
+    }
+    int k = 0;
+    while (true)
+    {
+        ClearScreen();
+        for (int i = 0; i < book_names.size(); ++i)
+        {
+            if (i == k)
+            {
+                HighlightPrint(book_names[i] + '\n');
+                continue;
+            }
+            MediatePrint(book_names[i] + '\n');
+        }
+        int ch = getch();
+        if (ch == 13)
+        {
+            ClearScreen();
+            Book target = can_return[k];
+            target.print();
+            target.display_now_state();
+            MediatePrint("归还此书? [y/n] ");
+            int tmp = getch();
+            if (tmp == 'y' || tmp == 'Y')
+            {
+                target.give_back(id_);
+            }
+        }
+        while (ch != 224)
+            ;
+        switch (getch())
+        {
+            case UP:
+            {
+                if (--k < 0)
+                    k = book_names.size() - 1;
+                break;
+            }
+            case DOWN:
+            {
+                if (++k > book_names.size() - 1)
+                    k = 0;
+                break;
+            }
+            default: break;
+        }
+    }
+    getch();
+    return;
+}
+
+void Reader::search()
+{
+    ClearScreen();
+    std::cout << std::setw(WIDTH / 2) << "关键词/ISBN: ";
+    std::vector<std::string> keywords;
+    std::string tmp;
+    while (std::cin >> tmp && std::cin.get() != '\n')
+        keywords.push_back(tmp);
+    std::vector<Book> search_result;
+    for (std::vector<Book>::iterator it = all_books.begin(); it != all_books.end(); ++it)
+    {
+        for (std::vector<std::string>::iterator iter = keywords.begin(); iter != keywords.end(); ++iter)
+        {
+            if (it->name().find(*iter) != std::string::npos || it->isbn().find(*iter) != std::string::npos)
+                search_result.push_back(*it);
+        }
+    }
+    std::vector<std::string> book_names;
+    for (std::vector<Book>::iterator it = search_result.begin(); it != search_result.end(); ++it)
+    {
+        book_names.push_back(it->name());
+    }
+    int k = 0;
+    while (true)
+    {
+        ClearScreen();
+        for (int i = 0; i < book_names.size(); ++i)
+        {
+            if (i == k)
+            {
+                HighlightPrint(book_names[i] + '\n');
+                continue;
+            }
+            MediatePrint(book_names[i] + '\n');
+        }
+        int ch = getch();
+        if (ch == 13)
+        {
+            ClearScreen();
+            Book target = search_result[k];
+            target.print();
+            target.display_now_state();
+            MediatePrint("借阅/预约此书? [y/n] ");
+            int tmp = getch();
+            if (tmp == 'y' || tmp == 'Y')
+            {
+                target.wanted(id_);
+            }
+        }
+        while (ch != 224)
+            ;
+        switch (getch())
+        {
+            case UP:
+            {
+                if (--k < 0)
+                    k = book_names.size() - 1;
+                break;
+            }
+            case DOWN:
+            {
+                if (++k > book_names.size() - 1)
+                    k = 0;
+                break;
+            }
+            default: break;
+        }
+    }
+    getch();
+    return;
+}
+
 void Reader::update()
 {
     Remove(readers, id_);
     readers.push_back(*this);
-    WriteAll();
+    WriteReaders();
+    ReadAll();
     return;
 }

@@ -9,11 +9,11 @@
 
 enum State 
 { 
-    HOLDING,    // 持有
+    HOLDING,    // 正常持有
     REQUEST,    // 预约此书
     WANTED,     // 被其他读者催还
     OVERDUE,    // 逾期未还
-    RETURNED    // 已换
+    RETURNED    // 已还
 };
 
 const int DAYS = 30;
@@ -22,6 +22,8 @@ struct Info
 {
     friend std::ifstream &operator >>(std::ifstream &in, Info &info);
     friend std::ofstream &operator <<(std::ofstream &out, const Info &info);
+    void print();
+    void print_duration();
     int reader;             // 读者ID
     int state;              // 借阅状态
     time_t start_time;      // 开始日期
@@ -40,20 +42,23 @@ public:
     friend std::ifstream &operator >>(std::ifstream &in, Book &book);
     friend std::ofstream &operator <<(std::ofstream &out, const Book &book);
 
-    bool change_state() { return (on_shelf_ = !on_shelf_); }    // 借出/归还
-    bool on_shelf() { return on_shelf_; }
-    bool return(int reader_id);     // 读者归还
-    bool wanted(int reader_id);     // 有读者需要, 若在架上则成功借出, 否则变更相关状态.
+    Info &info(int reader_id);       // 返回该读者借阅此书的信息
     int days() { return days_; }
     int index() { return index_; }
-    int state(int reader_id);       // 返回该读者与此书间的借阅状态
     std::string author() { return author_; }
     std::string isbn() { return isbn_; }
     std::string name() { return name_; }
     std::string publish() { return publish_; }
     std::vector<Info> info() { return info_; }
+    std::vector<Info> same_state(int state);
+    void change_state() { on_shelf_ = !on_shelf_; }    // 借出/归还
+    void change_state(int reader_id, int state);
+    void display_now_state();
+    void give_back(int reader_id);     // 读者归还
+    void on_shelf() { return on_shelf_; }
     void print();
     void update();
+    void wanted(int reader_id);     // 有读者需要, 若在架上则成功借出, 否则变更相关状态.
 
 private:
     std::string isbn_;      // ISBN号, 10位数字, unsigned不能完全存下, 故用string.
