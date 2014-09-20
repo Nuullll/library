@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <algorithm>
 #include <iomanip>
+#include <ctime>
 
 bool CompareHot(Book b1, Book b2)
 {
@@ -166,6 +167,31 @@ std::string GetPass()
     return password;
 }
 
+std::string RandomPass(int digits)
+{
+    char set[] = {'0','1','2','3','4','5','6','7','8','9',
+                  'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                  'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+    std::string pwd;
+    for (int i = 0; i < digits; ++i)
+    {
+        srand((unsigned int)((i + 1) * time(NULL)));
+        pwd.push_back(set[rand() % 52]);
+    }
+    return pwd;
+}
+
+std::vector<Book> Find(std::vector<Book> v, std::string isbn)
+{
+    std::vector<Book> rst;
+    for (std::vector<Book>::iterator it = v.begin(); it != v.end(); ++it)
+    {
+        if (it->isbn() == isbn)
+            rst.push_back(*it);
+    }
+    return rst;
+}
+
 std::vector<Book> HotBook(int num)
 {
     std::sort(all_books.begin(), all_books.end(), CompareHot);
@@ -174,12 +200,12 @@ std::vector<Book> HotBook(int num)
 
 Token Login()
 {
-    printf("%44s\n", "请登录...");
+    MediatePrint("请登录...\n");
     int id;
     std::string pwd;
-    printf("%51s", "请输入您的学号(工号): ");
+    MediatePrint("请输入您的学号(工号): ");
     std::cin >> id;
-    printf("%48s", "请输入您的密码: ");
+    MediatePrint("请输入您的密码: ");
     pwd = GetPass();
     return Token(id, pwd);
 }
@@ -212,6 +238,17 @@ void MediatePrint(std::string text)
     std::cout << std::setw((WIDTH + text.size()) / 2) << text;
 }
 
+void PrintBooks(std::vector<Book> v)
+{
+    std::string seperator(80, '-');
+    for (std::vector<Book>::iterator it = v.begin(); it != v.begin(); ++it)
+    {
+        it->print();
+        std::cout << seperator << std::endl;
+    }
+    return;
+}
+
 void Remove(std::vector<Book> &v, std::string isbn, int index)
 {
     for (std::vector<Book>::iterator it = v.begin(); it != v.end(); ++it)
@@ -222,6 +259,12 @@ void Remove(std::vector<Book> &v, std::string isbn, int index)
             break;
         }
     }
+}
+
+void Remove(std::vector<Book> &v, std::vector<Book> dels)
+{
+    for (std::vector<Book>::iterator it = dels.begin(); it != dels.end(); ++it)
+        Remove(v, *it);
 }
 
 void Title()

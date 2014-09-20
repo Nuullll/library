@@ -27,7 +27,7 @@ Book::Book(std::string isbn, std::string name, std::string author,
            isbn_(isbn), name_(name), author_(author), 
            publish_(publish), index_(0), on_shelf_(true), days_(days)
 {
-    for (std::vector<Book>::iterator it = books.begin(); it != books.end(); ++it)
+    for (std::vector<Book>::iterator it = all_books.begin(); it != all_books.end(); ++it)
     {
         if (it->isbn() == isbn)
             ++index_;

@@ -28,12 +28,12 @@ login:                          // 登录标签
         else
         {
             ClearScreen();
-            printf("%56s\n", "学号(工号)或密码错误! 重新输入? ");
-            printf("%50s\n", "[回车继续, q退出系统] ");
+            MediatePrint("学号(工号)或密码错误! 重新输入? \n");
+            MediatePrint("[回车继续, q退出系统] ");
             char tmp = getch();
             if (tmp == 'q' || tmp == 'Q')
             {
-                HighlightPrint("%41s\n", "再见!");
+                HighlightPrint("\n再见!\n");
                 return;
             }    
             ClearScreen();

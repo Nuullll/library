@@ -52,6 +52,7 @@ public:
     std::string name() { return name_; }
     std::string publish() { return publish_; }
     std::vector<Info> info() { return info_; }
+    void print();
     void update();
 
 private:

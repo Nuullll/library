@@ -3,6 +3,8 @@
 #define GLOBAL_H
 
 #include <vector>
+#include <iomanip>
+#include <iostream>
 #include "user.h"
 #include <cmath>
 #include <thread>
@@ -28,16 +30,20 @@ int Find(std::vector<Book> v, std::string isbn, int index);
 int Find(std::vector<User*> v, int id);     // 返回vector中找到的索引, 未找到则返回-1
 std::string Decode(int id, std::string cipher); // 解密
 std::string GetPass();      // 输入密码
+std::string RandomPass(int digits = 6);     // 返回digits位随机密码
+std::vector<Book> Find(std::vector<Book> v, std::string isbn);
 std::vector<Book> HotBook(int num = 3);    // 借阅排行榜
 Token Login();              // 登录, 返回令牌
 void ClearScreen();         // 保留标题的清屏函数
 void EBook();               // 电子资源界面
 void Exit();                // 退出系统
 void MediatePrint(std::string text);    // 居中打印字符串
+void PrintBooks(std::vector<Book> v);
 void Remove(std::vector<Book> &v, std::string isbn, int index);
+void Remove(std::vector<Book> &v, std::vector<Book> dels);
 void Scroll(std::string text);  // 滚动播放文本
 void Title();               // 系统标题
-void Wait(int milliseconds);  // 等待毫秒数
+void Wait(int milliseconds = 1000);  // 等待毫秒数
 void Welcome();             // 欢迎界面
 
 template <class T>
