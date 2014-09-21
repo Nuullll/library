@@ -7,15 +7,17 @@
 #include <vector>
 #include <utility>
 
+struct MenuNode;
+
 typedef std::pair<std::string, MenuNode*> Option;
-// 姣忎釜閫夐」鐢卞悕绉板拰鐩爣鑿滃崟鏋勬垚.
+// 每个选项由名称和目标菜单构成.
 
 struct MenuNode
 {
     std::vector<Option> options;
     MenuNode* previous;
     void append(Option option);
-    void show(int index);   // 閫変腑鐨勯�夐」绱㈠紩涓篿ndex
+    void show(int index);   // 选中的选项索引为index
 };
 
 #endif

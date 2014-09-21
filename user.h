@@ -9,9 +9,11 @@
 #include <vector>
 #include "book.h"
 
+const int WIDTH = 80;
+
 enum UserType { ADMINISTRATOR, READER };
 
-const int CREDIT = 80;      // åˆå§‹ä¿¡ç”¨ç§¯åˆ†
+const int CREDIT = 80;      // ³õÊ¼ĞÅÓÃ»ı·Ö
 
 class User
 {
@@ -26,17 +28,17 @@ public:
 
     bool operator ==(const int &id) { return id_ == id; }
 
-    virtual void print() = 0;   // æ˜¾ç¤ºç”¨æˆ·åŸºæœ¬ä¿¡æ¯
-    virtual void update() = 0;  // æ›´æ–°å…¨å±€vectoråŠæ–‡ä»¶
+    virtual void print() = 0;   // ÏÔÊ¾ÓÃ»§»ù±¾ĞÅÏ¢
+    virtual void update() = 0;  // ¸üĞÂÈ«¾Övector¼°ÎÄ¼ş
     
     int id() { return id_; }
     int identity() {return identity_; }
-    void set_password();        // é‡è®¾å¯†ç 
+    void set_password();        // ÖØÉèÃÜÂë
 
 protected:
-    int identity_;              // ç”¨æˆ·èº«ä»½
-    int id_;                    // ç”¨æˆ·ID
-    std::string password_;      // å¯†ç 
+    int identity_;              // ÓÃ»§Éí·İ
+    int id_;                    // ÓÃ»§ID
+    std::string password_;      // ÃÜÂë
 };
 
 class Administrator: public User
@@ -49,13 +51,13 @@ public:
     friend std::ifstream &operator >>(std::ifstream &in, Administrator &admin);
     friend std::ofstream &operator <<(std::ofstream &out, const Administrator &admin);
 
-    void add_book();            // æ–°ä¹¦ä¸Šæ¶
-    void add_user();            // å¢åŠ æ–°ç”¨æˆ·
-    void all_book();            // æŸ¥çœ‹æ‰€æœ‰ä¹¦ç±ä¿¡æ¯
-    void all_user();            // æŸ¥çœ‹æ‰€æœ‰ç”¨æˆ·ä¿¡æ¯
-    void del_book();            // æ—§ä¹¦ä¸‹æ¶
-    void del_user();            // åˆ é™¤ç”¨æˆ·
-    void print() { std::cout << std::setw(WIDTH / 2) << "ç®¡ç†å‘˜: " << id_ << std::endl; }
+    void add_book();            // ĞÂÊéÉÏ¼Ü
+    void add_user();            // Ôö¼ÓĞÂÓÃ»§
+    void all_book();            // ²é¿´ËùÓĞÊé¼®ĞÅÏ¢
+    void all_user();            // ²é¿´ËùÓĞÓÃ»§ĞÅÏ¢
+    void del_book();            // ¾ÉÊéÏÂ¼Ü
+    void del_user();            // É¾³ıÓÃ»§
+    void print() { std::cout << std::setw(WIDTH / 2) << "¹ÜÀíÔ±: " << id_ << std::endl; }
     void update();
 
 private:
@@ -65,29 +67,31 @@ private:
 class Reader: public User
 {
 public:
-    Reader() {}
-    Reader(int id, std::string password, std::string name): User(id, password), name_(name), credit_(CREDIT) { books_.reserve(256); }
+	Reader() { books_.reserve(256); }
+    Reader(int id, std::string password, std::string name): User(READER, id, password), name_(name), credit_(CREDIT) { books_.reserve(256); }
     virtual ~Reader() {}
 
     friend std::ifstream &operator >>(std::ifstream &in, Reader &reader);
     friend std::ofstream &operator <<(std::ofstream &out, const Reader &reader);
 
-    bool change_state(Book book, int state);        // å˜æ›´bookçš„çŠ¶æ€ä¸ºstate
-    int change_credit(int diff) { return credit_ += diff; }        // ä¿¡ç”¨ç§¯åˆ†å˜åŒ–
+    bool change_state(Book book, int state);        // ±ä¸übookµÄ×´Ì¬Îªstate
+    int change_credit(int diff) { return credit_ += diff; }        // ĞÅÓÃ»ı·Ö±ä»¯
     int credit() { return credit_; }
     std::string name() { return name_; }
     std::vector<Book> books(int state = 0);
-    void history();     // å€Ÿé˜…å†å²ç•Œé¢
-    void print() { std::cout << std::setw(WIDTH / 2) << "ç®¡ç†å‘˜: " << id_ << ": " << name_ << "å½“å‰ä¿¡ç”¨ç§¯åˆ†: " << credit_ << std::endl; }
-    void recommended(); // é¦†é•¿æ¨èç•Œé¢
-    void give_back();   // è¯»è€…è¿˜ä¹¦ç•Œé¢
-    void search();      // æœç´¢ä¹¦ç±ç•Œé¢
+	void add_book(Book book);
+	void del_book(Book book);
+    void history();     // ½èÔÄÀúÊ·½çÃæ
+    void print() { std::cout << std::setw(WIDTH / 2 - 10) << "¶ÁÕß: " << id_ << "  " << name_ << "  µ±Ç°ĞÅÓÃ»ı·Ö: " << credit_ << std::endl; }
+    void recommended(); // ¹İ³¤ÍÆ¼ö½çÃæ
+    void give_back();   // ¶ÁÕß»¹Êé½çÃæ
+    void search();      // ËÑË÷Êé¼®½çÃæ
     void update();
 
 private:
-    std::string name_;          // è¯»è€…å§“å
-    int credit_;                // ä¿¡ç”¨ç§¯åˆ†
-    std::vector<Book> books_;   // ä¸è¯¥è¯»è€…ç›¸å…³çš„ä¹¦(åŒ…æ‹¬å€Ÿé˜…è¿‡, æŒæœ‰, é¢„çº¦ç­‰)    
+    std::string name_;          // ¶ÁÕßĞÕÃû
+    int credit_;                // ĞÅÓÃ»ı·Ö
+    std::vector<Book> books_;   // Óë¸Ã¶ÁÕßÏà¹ØµÄÊé(°üÀ¨½èÔÄ¹ı, ³ÖÓĞ, Ô¤Ô¼µÈ)    
 };
 
 #endif

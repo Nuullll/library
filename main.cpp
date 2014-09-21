@@ -1,16 +1,17 @@
 // main.cpp
 
 #include "global.h"
+#include "token.h"
 #include "menu.h"
 #include "file.h"
+#include <conio.h>
 #include <map>
 
 int main(int argc, char const *argv[])
 {
-login:                          // ç™»å½•æ ‡ç­¾
+login:                          // µÇÂ¼±êÇ©
     ClearScreen();
     ReadAll();
-    Welcome();
     Token tmp;
     User* user;
     while (true)
@@ -19,8 +20,8 @@ login:                          // ç™»å½•æ ‡ç­¾
         if (tmp.auth() != -1)
         {
             user = users[Find(users, tmp.id())];
-            printf("%44s\n", "ç™»å½•æˆåŠŸ!");
-            printf("%40s", "æ¬¢è¿ ");
+            MediatePrint("µÇÂ¼³É¹¦!\n");
+            MediatePrint("»¶Ó­ \n");
             user->print();
             getch();
             break;
@@ -28,36 +29,37 @@ login:                          // ç™»å½•æ ‡ç­¾
         else
         {
             ClearScreen();
-            MediatePrint("å­¦å·(å·¥å·)æˆ–å¯†ç é”™è¯¯! é‡æ–°è¾“å…¥? \n");
-            MediatePrint("[å›è½¦ç»§ç»­, qé€€å‡ºç³»ç»Ÿ] ");
+            MediatePrint("Ñ§ºÅ(¹¤ºÅ)»òÃÜÂë´íÎó! ÖØĞÂÊäÈë? \n");
+            MediatePrint("[»Ø³µ¼ÌĞø, qÍË³öÏµÍ³] ");
             char tmp = getch();
             if (tmp == 'q' || tmp == 'Q')
             {
-                HighlightPrint("\nå†è§!\n");
-                return;
+                HighlightPrint("\nÔÙ¼û!\n");
+                return 0;
             }    
             ClearScreen();
         }
     }
+	ClearScreen();
     switch (user->identity())
     {
-        // ç®¡ç†å‘˜èœå•
+        // ¹ÜÀíÔ±²Ëµ¥
         case ADMINISTRATOR:
         {
             Administrator admin = admins[Find(admins, tmp.id())];
             MenuNode top_menu, user_menu, book_menu;
             top_menu.previous = user_menu.previous = book_menu.previous = &top_menu;
-            top_menu.append(Option("ç”¨æˆ·ç®¡ç†", &user_menu));
-            top_menu.append(Option("ä¹¦ç±ç®¡ç†", &book_menu));
-            top_menu.append(Option("ä¿®æ”¹å¯†ç ", NULL));
-            top_menu.append(Option("é€€å‡ºç™»å½•", NULL));
-            top_menu.append(Option("é€€å‡ºç³»ç»Ÿ", NULL));
-            user_menu.append(Option("æ‰€æœ‰ç”¨æˆ·", NULL));
-            user_menu.append(Option("æ³¨å†Œæ–°ç”¨æˆ·", NULL));
-            user_menu.append(Option("åˆ é™¤ç”¨æˆ·", NULL));
-            book_menu.append(Option("æ‰€æœ‰ä¹¦ç±", NULL));
-            book_menu.append(Option("æ–°ä¹¦ä¸Šæ¶", NULL));
-            book_menu.append(Option("æ—§ä¹¦ä¸‹æ¶", NULL));
+            top_menu.append(Option("ÓÃ»§¹ÜÀí", &user_menu));
+            top_menu.append(Option("Êé¼®¹ÜÀí", &book_menu));
+            top_menu.append(Option("ĞŞ¸ÄÃÜÂë", NULL));
+            top_menu.append(Option("ÍË³öµÇÂ¼", NULL));
+            top_menu.append(Option("ÍË³öÏµÍ³", NULL));
+            user_menu.append(Option("ËùÓĞÓÃ»§", NULL));
+            user_menu.append(Option("×¢²áĞÂÓÃ»§", NULL));
+            user_menu.append(Option("É¾³ıÓÃ»§", NULL));
+            book_menu.append(Option("ËùÓĞÊé¼®", NULL));
+            book_menu.append(Option("ĞÂÊéÉÏ¼Ü", NULL));
+            book_menu.append(Option("¾ÉÊéÏÂ¼Ü", NULL));
             MenuNode now = top_menu;
             int k = 0;
             while (true)
@@ -97,15 +99,15 @@ login:                          // ç™»å½•æ ‡ç­¾
                         if (now.options[k].second == NULL)
                         {
                             std::map<std::string, int> mp;
-                            mp["ä¿®æ”¹å¯†ç "] = 0;
-                            mp["é€€å‡ºç™»å½•"] = 1;
-                            mp["é€€å‡ºç³»ç»Ÿ"] = 2;
-                            mp["æ‰€æœ‰ç”¨æˆ·"] = 3;
-                            mp["æ³¨å†Œæ–°ç”¨æˆ·"] = 4;
-                            mp["åˆ é™¤ç”¨æˆ·"] = 5;
-                            mp["æ‰€æœ‰ä¹¦ç±"] = 6;
-                            mp["æ–°ä¹¦ä¸Šæ¶"] = 7;
-                            mp["æ—§ä¹¦ä¸‹æ¶"] = 8;
+                            mp["ĞŞ¸ÄÃÜÂë"] = 0;
+                            mp["ÍË³öµÇÂ¼"] = 1;
+                            mp["ÍË³öÏµÍ³"] = 2;
+                            mp["ËùÓĞÓÃ»§"] = 3;
+                            mp["×¢²áĞÂÓÃ»§"] = 4;
+                            mp["É¾³ıÓÃ»§"] = 5;
+                            mp["ËùÓĞÊé¼®"] = 6;
+                            mp["ĞÂÊéÉÏ¼Ü"] = 7;
+                            mp["¾ÉÊéÏÂ¼Ü"] = 8;
                             switch (mp[now.options[k].first])
                             {
                                 case 0: admin.set_password(); break;
@@ -131,21 +133,21 @@ login:                          // ç™»å½•æ ‡ç­¾
                 }
             }
         }
-        // è¯»è€…èœå•
+        // ¶ÁÕß²Ëµ¥
         case READER:
         {
             Reader reader = readers[Find(readers, tmp.id())];
             MenuNode top_menu, checkout_menu;
             top_menu.previous = checkout_menu.previous = &top_menu;
-            top_menu.append(Option("å€Ÿé˜…ä¹¦ç±", &checkout_menu));
-            top_menu.append(Option("è‡ªåŠ©è¿˜ä¹¦", NULL));
-            top_menu.append(Option("å€Ÿé˜…å†å²", NULL));
-            top_menu.append(Option("ä¿®æ”¹å¯†ç ", NULL));
-            top_menu.append(Option("é€€å‡ºç™»å½•", NULL));
-            top_menu.append(Option("é€€å‡ºç³»ç»Ÿ", NULL));
-            checkout_menu.append(Option("æŸ¥è¯¢ä¹¦ç±", NULL));
-            checkout_menu.append(Option("é¦†é•¿æ¨è", NULL));
-            checkout_menu.append(Option("ç”µå­èµ„æº", NULL));
+            top_menu.append(Option("½èÔÄÊé¼®", &checkout_menu));
+            top_menu.append(Option("×ÔÖú»¹Êé", NULL));
+            top_menu.append(Option("½èÔÄÀúÊ·", NULL));
+            top_menu.append(Option("ĞŞ¸ÄÃÜÂë", NULL));
+            top_menu.append(Option("ÍË³öµÇÂ¼", NULL));
+            top_menu.append(Option("ÍË³öÏµÍ³", NULL));
+            checkout_menu.append(Option("²éÑ¯Êé¼®", NULL));
+            checkout_menu.append(Option("¹İ³¤ÍÆ¼ö", NULL));
+            checkout_menu.append(Option("µç×Ó×ÊÔ´", NULL));
             MenuNode now = top_menu;
             int k = 0;
             while (true)
@@ -185,17 +187,17 @@ login:                          // ç™»å½•æ ‡ç­¾
                         if (now.options[k].second == NULL)
                         {
                             std::map<std::string, int> mp;
-                            mp["è‡ªåŠ©è¿˜ä¹¦"] = 0;
-                            mp["å€Ÿé˜…å†å²"] = 1;
-                            mp["ä¿®æ”¹å¯†ç "] = 2;
-                            mp["é€€å‡ºç™»å½•"] = 3;
-                            mp["é€€å‡ºç³»ç»Ÿ"] = 4;
-                            mp["æŸ¥è¯¢ä¹¦ç±"] = 5;
-                            mp["é¦†é•¿æ¨è"] = 6;
-                            mp["ç”µå­èµ„æº"] = 7;
+                            mp["×ÔÖú»¹Êé"] = 0;
+                            mp["½èÔÄÀúÊ·"] = 1;
+                            mp["ĞŞ¸ÄÃÜÂë"] = 2;
+                            mp["ÍË³öµÇÂ¼"] = 3;
+                            mp["ÍË³öÏµÍ³"] = 4;
+                            mp["²éÑ¯Êé¼®"] = 5;
+                            mp["¹İ³¤ÍÆ¼ö"] = 6;
+                            mp["µç×Ó×ÊÔ´"] = 7;
                             switch (mp[now.options[k].first])
                             {
-                                case 0: reader.return(); break;
+                                case 0: reader.give_back(); break;
                                 case 1: reader.history(); break;
                                 case 2: reader.set_password(); break;
                                 case 3: goto login;

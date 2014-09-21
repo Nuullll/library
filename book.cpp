@@ -4,6 +4,7 @@
 
 #include "global.h"
 #include "file.h"
+#include <conio.h>
 
 std::ifstream &operator >>(std::ifstream &in, Info &info)
 {
@@ -18,7 +19,7 @@ std::ifstream &operator >>(std::ifstream &in, Info &info)
         switch (state)
         {
             case HOLDING: info.state = OVERDUE; break;
-            case REQUEST: break; // Book::wanted()Â§ÑÁêÜ
+            case REQUEST: break; // Book::wanted()¥¶¿Ì
             case WANTED: info.state = OVERDUE; break;
             case OVERDUE: info.state = OVERDUE; break;
             case RETURNED: info.state = RETURNED; break;
@@ -40,32 +41,32 @@ std::ofstream &operator <<(std::ofstream &out, const Info &info)
 
 void Info::print()
 {
-    std::cout << std::setw(WIDTH / 2) << "ËØªËÄÖID: " << reader;
+    std::cout << std::setw(WIDTH / 2) << "∂¡’ﬂID: " << reader;
     switch (state)
     {
         case HOLDING:
         {
-            std::cout << "  ÂÄüÈòÖ‰∏≠\n";
+            std::cout << "  ΩË‘ƒ÷–\n";
             break;
         }
         case REQUEST:
         {
-            std::cout << "  Â∑≤È¢ÑÁ∫¶\n";
+            std::cout << "  “—‘§‘º\n";
             break;
         }
         case WANTED:
         {
-            std::cout << "  ÂÄüÈòÖ‰∏≠, Ë¢´È¢ÑÁ∫¶, ÂÄüÊúüÁº©Áü≠\n";
+            std::cout << "  ΩË‘ƒ÷–, ±ª‘§‘º, ΩË∆⁄Àı∂Ã\n";
             break;
         }
         case OVERDUE:
         {
-            std::cout << "  ÈÄæÊúüÊú™Êç¢, ÂèóÂà∞ÊÉ©ÁΩö\n";
+            std::cout << "  ”‚∆⁄Œ¥ªª,  ‹µΩ≥Õ∑£\n";
             break;
         }
         case RETURNED:
         {
-            std::cout << "  ÊõæÂÄüÈòÖ\n";
+            std::cout << "  ‘¯ΩË‘ƒ\n";
             break;
         }
         default: break;
@@ -76,10 +77,11 @@ void Info::print()
 
 void Info::print_duration()
 {
-    struct tm * time_start, time_end;
-    time_start = localtime(&start_time);
-    time_end = localtime(&end_time);
-    std::cout << std::setw(WIDTH / 2) << "Ëµ∑Ê≠¢Êó∂Èó¥: " << asctime(time_start) << ' - ' << asctime(time_end) << std::endl;
+//    struct tm * time_start, * time_end;
+//    time_start = localtime(&start_time);
+ //   time_end = localtime(&end_time);
+    std::cout << std::setw(WIDTH / 2) << "ø™ º ±º‰: " << ctime(&start_time);
+	std::cout << std::setw(WIDTH / 2) << "Ω· ¯ ±º‰: " << ctime(&end_time);
     return;
 }
 
@@ -95,15 +97,16 @@ Book::Book(std::string isbn, std::string name, std::string author,
     }
 }
 
-friend std::ifstream &operator >>(std::ifstream &in, Book &book)
+std::ifstream &operator >>(std::ifstream &in, Book &book)
 {
     in >> book.isbn_;
-    in >> book.name_;
-    in >> book.author_;
-    in >> book.publish_;
-    in >> index_;
-    in >> on_shelf_;
-    in >> days_;
+	in.get();
+	getline(in, book.name_);
+	getline(in, book.author_);
+	getline(in, book.publish_);
+    in >> book.index_;
+    in >> book.on_shelf_;
+    in >> book.days_;
     char start_flag;
     while ((start_flag = in.get()) == '\n')
         ;
@@ -130,7 +133,7 @@ friend std::ifstream &operator >>(std::ifstream &in, Book &book)
     return in;
 }
 
-friend std::ofstream &operator <<(std::ofstream &out, const Book &book)
+std::ofstream &operator <<(std::ofstream &out, const Book &book)
 {
     out << book.isbn_ << '\n';
     out << book.name_ << '\n';
@@ -138,9 +141,9 @@ friend std::ofstream &operator <<(std::ofstream &out, const Book &book)
     out << book.publish_ << '\n';
     out << book.index_ << '\n';
     out << book.on_shelf_ << '\n';
-    out << book.days << '\n';
+    out << book.days_ << '\n';
     out << "*\n";
-    for (std::vector<Info>::iterator it = book.info_.begin(); it != book.info_.end(); ++it)
+    for (std::vector<Info>::const_iterator it = book.info_.begin(); it != book.info_.end(); ++it)
         out << *it;
     out << "#\n\n";
     return out;
@@ -174,10 +177,6 @@ void Book::change_state(int reader_id, int state)
 
 void Book::display_now_state()
 {
-    if (on_shelf_)
-        HighlightPrint("ÁõÆÂâçÂú®Êû∂‰∏ä! Ê¨≤ÂÄü‰ªéÈÄü!\n");
-    else
-        HighlightPrint("Â∑≤ÂÄüÂá∫!\n");
     for (std::vector<Info>::iterator it = info_.begin(); it != info_.end(); ++it)
         it->print();
     return;
@@ -185,19 +184,25 @@ void Book::display_now_state()
 
 void Book::give_back(int reader_id)
 {
+	time_t now = time(NULL);
     if (info(reader_id).state == OVERDUE)
     {
-        time_t now = time(NULL);
         Reader tmp = readers[Find(readers, reader_id)];
         int diff = - int(pow(2, (now - info(reader_id).end_time) / SECONDS_A_DAY));
         tmp.change_credit(diff);
+		tmp.change_state(*this, RETURNED);
+		info(tmp.id()).end_time = now;
         tmp.update();
+		HighlightPrint("πÈªπ≥…π¶, “—≥¨π˝∆⁄œﬁ, –≈”√ΩµµÕ!\n");
     }
     else
     {
         Reader tmp = readers[Find(readers, reader_id)];
         tmp.change_credit(1);
+		tmp.change_state(*this, RETURNED);
+		info(tmp.id()).end_time = now;
         tmp.update();
+		HighlightPrint("∞¥ ±ªπ È≥…π¶, –≈”√Ã·∏ﬂ!\n");
     }
     on_shelf_ = true;
     change_state(reader_id, RETURNED);
@@ -207,15 +212,17 @@ void Book::give_back(int reader_id)
 void Book::print()
 {
     std::cout << std::setw(WIDTH / 2) << "ISBN: " << isbn_ << std::endl;
-    std::cout << std::setw(WIDTH / 2) << "‰π¶Âêç: " << name_ << std::endl;
-    std::cout << std::setw(WIDTH / 2) << "‰ΩúËÄÖ: " << author_ << std::endl;
-    std::cout << std::setw(WIDTH / 2) << "Âá∫Áâà‰ø°ÊÅØ: " << publish_ << std::endl;
+	std::cout << std::setw(WIDTH / 2) << "Õ¨ ÈÀ˜“˝: " << index_ << std::endl;
+    std::cout << std::setw(WIDTH / 2) << " È√˚: " << name_ << std::endl;
+    std::cout << std::setw(WIDTH / 2) << "◊˜’ﬂ: " << author_ << std::endl;
+    std::cout << std::setw(WIDTH / 2) << "≥ˆ∞Ê–≈œ¢: " << publish_ << std::endl;
+	HighlightPrint((on_shelf_ ? "‘⁄º‹…œ\n" : "“—ΩË≥ˆ\n" ));
     return;
 }
 
 void Book::update()
 {
-    Remove(all_books, id_);
+    Remove(all_books, isbn_, index_);
     all_books.push_back(*this);
     WriteBooks();
     ReadAll();
@@ -229,32 +236,42 @@ void Book::wanted(int reader_id)
     time_t now = time(NULL);
     time_t start_time = now;
     time_t end_time = now + days_ * reader.credit() * SECONDS_A_DAY / CREDIT;
-    if (tmp.size() != 0) // Êúâ‰∫∫È¢ÑÁ∫¶
+    if (tmp.size() != 0) // ”–»À‘§‘º
     {
-        if (tmp[0].reader == reader_id)
-        {
-            change_state(reader_id, HOLDING);
-            info(reader_id).start_time = start_time;
-            info(reader_id).end_time = end_time;
-            update();
-            HighlightPrint("ÊÇ®Â∑≤ÊèêÂâçÈ¢ÑÁ∫¶, ÂÄüÈòÖÊàêÂäü!\n");
-            info(reader_id).print_duration();
-            getch();
-            return;
-        }
         if (tmp[0].end_time < now)
         {
             Remove(info_, tmp[0].reader);
             Remove(info_, reader_id);
-            info_.push_back(Info{ reader_id, HOLDING, start_time, end_time });
+            info_.push_back(Info(reader_id, HOLDING, start_time, end_time));
+			on_shelf_ = false;
+			reader.del_book(*this);
+			reader.add_book(*this);
+			reader.update();
             update();
-            HighlightPrint("ÂÄüÈòÖÊàêÂäü! \n");
+            HighlightPrint("ΩË‘ƒ≥…π¶! \n");
             info(reader_id).print_duration();
-            getch();
             return;
         }
-        HighlightPrint("È¢ÑÁ∫¶Â§±Ë¥•, Â∑≤Êúâ‰∫∫È¢ÑÁ∫¶!\n");
-        getch();
+        if (tmp[0].reader == reader_id)
+        {
+			if (same_state(HOLDING).size() == 0)
+			{
+				change_state(reader_id, HOLDING);
+				info(reader_id).start_time = start_time;
+				info(reader_id).end_time = end_time;
+				on_shelf_ = false;
+				reader.del_book(*this);
+				reader.add_book(*this);
+				reader.update();
+				update();
+				HighlightPrint("ƒ˙“—Ã·«∞‘§‘º, ΩË‘ƒ≥…π¶!\n");
+				info(reader_id).print_duration();
+				return;
+			}
+			HighlightPrint("ƒ˙“—‘§‘ºπ˝, ≤ªƒ‹÷ÿ∏¥‘§‘º!\n");
+			return;
+        }
+        HighlightPrint("‘§‘º ß∞‹, “—”–»À‘§‘º!\n");
         return;
     }
     tmp = same_state(OVERDUE);
@@ -262,16 +279,17 @@ void Book::wanted(int reader_id)
     {
         if (tmp[0].reader == reader_id)
         {
-            HighlightPrint("ËØ∑Â∞ΩÂø´ÂΩíËøòÊú¨‰π¶!\n");
-            getch();
+            HighlightPrint("«Îæ°øÏπÈªπ±æ È!\n");
             return;
         }
         Remove(info_, reader_id);
-        info_.push_back(Info{ reader_id, REQUEST, start_time, start_time + 3 * SECONDS_A_DAY });
-        update();
-        HighlightPrint("È¢ÑÁ∫¶ÊàêÂäü, Áî±‰∫é‰∏ä‰∏Ä‰ΩçËØªËÄÖÁé∞ÈÄæÊúüÊú™Ëøò, ÊÇ®‰ªéÂç≥Êó•Ëµ∑Êã•Êúâ‰∏âÂ§©ÁöÑÊ≠§‰π¶‰ºòÂÖàÂÄüÈòÖÊùÉ\n");
+        info_.push_back(Info(reader_id, REQUEST, start_time, start_time + 3 * SECONDS_A_DAY));
+		reader.del_book(*this);
+		reader.add_book(*this);
+		reader.update();
+		update();
+        HighlightPrint("‘§‘º≥…π¶, ”…”⁄…œ“ªŒª∂¡’ﬂœ÷”‚∆⁄Œ¥ªπ, ƒ˙¥”º¥»’∆”µ”–»˝ÃÏµƒ¥À È”≈œ»ΩË‘ƒ»®\n");
         info(reader_id).print_duration();
-        getch();
         return;
     }
     tmp = same_state(HOLDING);
@@ -279,25 +297,29 @@ void Book::wanted(int reader_id)
     {
         if (tmp[0].reader == reader_id)
         {
-            HighlightPrint("ÊÇ®Ê≠£Âú®ÂÄüÈòÖÊ≠§‰π¶!\n");
-            getch();
+            HighlightPrint("ƒ˙’˝‘⁄ΩË‘ƒ¥À È!\n");
             return;
         }
         info(tmp[0].reader).state = WANTED;
         info(tmp[0].reader).end_time = (now + info(tmp[0].reader).end_time) / 2;
         Remove(info_, reader_id);
-        info_.push_back(Info{ reader_id, REQUEST, start_time, start_time + 3 * SECONDS_A_DAY });
-        update();
-        HighlightPrint("È¢ÑÁ∫¶ÊàêÂäü, Áî±‰∫é‰∏ä‰∏Ä‰ΩçËØªËÄÖÁé∞ÈÄæÊúüÊú™Ëøò, ÊÇ®‰ªéÂç≥Êó•Ëµ∑Êã•Êúâ‰∏âÂ§©ÁöÑÊ≠§‰π¶‰ºòÂÖàÂÄüÈòÖÊùÉ\n");
+		info_.push_back(Info(reader_id, REQUEST, start_time, tmp[0].end_time + 3 * SECONDS_A_DAY));
+		reader.del_book(*this);
+		reader.add_book(*this);
+		reader.update();
+		update();
+        HighlightPrint("‘§‘º≥…π¶, ƒ˙¥”…œŒª∂¡’ﬂªπ È»’∆”µ”–»˝ÃÏµƒ¥À È”≈œ»ΩË‘ƒ»®\n");
         info(reader_id).print_duration();
-        getch();
         return;
     }
     Remove(info_, reader_id);
-    info_.push_back(Info{ reader_id, HOLDING, start_time, end_time });
+    info_.push_back(Info(reader_id, HOLDING, start_time, end_time));
+	on_shelf_ = false;
+	reader.del_book(*this);
+	reader.add_book(*this);
+	reader.update();
     update();
-    HighlightPrint("ÂÄüÈòÖÊàêÂäü! \n");
+    HighlightPrint("ΩË‘ƒ≥…π¶! \n");
     info(reader_id).print_duration();
-    getch();
     return;
 }

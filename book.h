@@ -20,6 +20,9 @@ const int DAYS = 30;
 
 struct Info
 {
+	Info() {}
+	Info(int reader, int state, time_t start_time, time_t end_time): reader(reader), state(state), start_time(start_time), end_time(end_time) {}
+	bool operator ==(const int &reader_id) { return (reader == reader_id); }
     friend std::ifstream &operator >>(std::ifstream &in, Info &info);
     friend std::ofstream &operator <<(std::ofstream &out, const Info &info);
     void print();
@@ -42,6 +45,7 @@ public:
     friend std::ifstream &operator >>(std::ifstream &in, Book &book);
     friend std::ofstream &operator <<(std::ofstream &out, const Book &book);
 
+    bool on_shelf() { return on_shelf_; }
     Info &info(int reader_id);       // 返回该读者借阅此书的信息
     int days() { return days_; }
     int index() { return index_; }
@@ -55,7 +59,6 @@ public:
     void change_state(int reader_id, int state);
     void display_now_state();
     void give_back(int reader_id);     // 读者归还
-    void on_shelf() { return on_shelf_; }
     void print();
     void update();
     void wanted(int reader_id);     // 有读者需要, 若在架上则成功借出, 否则变更相关状态.

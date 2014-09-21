@@ -7,13 +7,20 @@
 #include <algorithm>
 #include <iomanip>
 #include <ctime>
+#include <conio.h>
+#include "token.h"
+
+std::vector<User*> users;
+std::vector<Administrator> admins;
+std::vector<Reader> readers;
+std::vector<Book> all_books;
 
 bool CompareHot(Book b1, Book b2)
 {
     return (b1.info().size() > b2.info().size());
 }
 
-bool HighlightPrint(int setw, std::string text, int color = 9)
+bool HighlightPrint(int setw, std::string text, int color)
 {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
     if (handle == 0)
@@ -24,20 +31,9 @@ bool HighlightPrint(int setw, std::string text, int color = 9)
     return (ret == true);
 }
 
-bool HighlightPrint(std::string text, int color = 9) 
+bool HighlightPrint(std::string text, int color) 
 {
     return HighlightPrint((WIDTH + text.size()) / 2, text, color);
-}
-
-bool IsChineseChar(unsigned char lo, unsigned char hi)
-{
-    if (lo < 0x81 || lo > 0xFE)
-        return false;
-    if (lo >= 0xA1 && lo <= 0xA9)
-        return false;
-    if (hi < 0x40 || hi == 0xFF || hi == 0x7F)
-        return false;
-    return true;
 }
 
 bool ValidPassword(std::string pwd)
@@ -206,17 +202,18 @@ std::vector<Book> Find(std::vector<Book> v, std::string isbn)
 std::vector<Book> HotBook(int num)
 {
     std::sort(all_books.begin(), all_books.end(), CompareHot);
-    return std::vector<Book>(all_books.begin(), all_books.begin() + num + 1);
+	num = (num <= all_books.size() ? num : all_books.size());
+	return std::vector<Book>(all_books.begin(), all_books.begin() + num);
 }
 
 Token Login()
 {
-    MediatePrint("è¯·ç™»å½•...\n");
+    MediatePrint("ÇëµÇÂ¼...\n");
     int id;
     std::string pwd;
-    MediatePrint("è¯·è¾“å…¥æ‚¨çš„å­¦å·(å·¥å·): ");
+    std::cout << std::setw(WIDTH / 2) << "ÇëÊäÈëÄúµÄÑ§ºÅ(¹¤ºÅ): ";
     std::cin >> id;
-    MediatePrint("è¯·è¾“å…¥æ‚¨çš„å¯†ç : ");
+    std::cout << std::setw(WIDTH / 2) << "ÇëÊäÈëÄúµÄÃÜÂë: ";
     pwd = GetPass();
     return Token(id, pwd);
 }
@@ -229,17 +226,18 @@ void ClearScreen()
 
 void EBook()
 {
-    HighlightPrint("è¯·ç™»å½• http://lib.tsinghua.edu.cn è®¿é—®æŸ¥é˜…ç”µå­èµ„æºåº“!");
+    HighlightPrint("ÇëµÇÂ¼ http://lib.tsinghua.edu.cn ·ÃÎÊ²éÔÄµç×Ó×ÊÔ´¿â!");
+	getch();
 }
 
 void Exit()
 {
     ClearScreen();
-    MediatePrint("ç¡®è®¤é€€å‡º? [y/n] \n");
+    MediatePrint("È·ÈÏÍË³ö? [y/n] \n");
     char ch = getch();
     if (ch == 'y' || ch == 'Y')
     {
-        MediatePrint("å†è§! \n");
+        MediatePrint("ÔÙ¼û! \n");
         exit(1);
     }
 }
@@ -251,8 +249,9 @@ void MediatePrint(std::string text)
 
 void PrintBooks(std::vector<Book> v)
 {
+	ClearScreen();
     std::string seperator(80, '-');
-    for (std::vector<Book>::iterator it = v.begin(); it != v.begin(); ++it)
+    for (std::vector<Book>::iterator it = v.begin(); it != v.end(); ++it)
     {
         it->print();
         std::cout << seperator << std::endl;
@@ -292,15 +291,10 @@ void Remove(std::vector<Book> &v, std::vector<Book> dels)
 
 void Title()
 {
-    HighlightPrint("å›¾ä¹¦ç®¡ç†ç³»ç»Ÿ v1.60.1");
+    HighlightPrint("Í¼Êé¹ÜÀíÏµÍ³ v1.60.1\n\n");
 }
 
 void Wait(int milliseconds)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
-}
-
-void Welcome()
-{
-    
 }

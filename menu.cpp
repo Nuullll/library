@@ -10,6 +10,7 @@ void MenuNode::append(Option option)
 
 void MenuNode::show(int index)
 {
+	ClearScreen();
     for (int i = 0; i < options.size(); ++i)
     {
         if (i == index)

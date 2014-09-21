@@ -11,33 +11,33 @@
 void User::set_password()
 {
     ClearScreen();
-    std::cout << std::setw(WIDTH / 2) << "è¯·è¾“å…¥å¯†ç : ";
+    std::cout << std::setw(WIDTH / 2) << "ÇëÊäÈëÃÜÂë: ";
     std::string origin = GetPass();
     if (origin != password_)
     {
-        HighlightPrint("å¯†ç é”™è¯¯!");
+        HighlightPrint("ÃÜÂë´íÎó!");
         getch();
         return;
     }
-    std::cout << std::setw(WIDTH / 2) << "æ–°å¯†ç : ";
+    std::cout << std::setw(WIDTH / 2) << "ĞÂÃÜÂë: ";
     std::string new_pwd = GetPass();
     if (!ValidPassword(new_pwd))
     {
-        HighlightPrint("è¯·è®¾ç½®6~15ä½å¯†ç !");
+        HighlightPrint("ÇëÉèÖÃ6~15Î»ÃÜÂë!");
         getch();
         return;
     }
-    std::cout << std::setw(WIDTH / 2) << "é‡å¤æ–°å¯†ç : ";
+    std::cout << std::setw(WIDTH / 2) << "ÖØ¸´ĞÂÃÜÂë: ";
     std::string confirm = GetPass();
     if (new_pwd != confirm)
     {
-        HighlightPrint("ä¸¤æ¬¡å¯†ç ä¸ä¸€è‡´!");
+        HighlightPrint("Á½´ÎÃÜÂë²»Ò»ÖÂ!");
         getch();
         return;
     }
     password_ = new_pwd;
     update();
-    HighlightPrint("è®¾ç½®æˆåŠŸ!\n");
+    HighlightPrint("ÉèÖÃ³É¹¦!\n");
     getch();
     return;
 }
@@ -64,12 +64,13 @@ void Administrator::add_user()
 {
     ClearScreen();
     std::vector<std::string> identities;
-    identities.push_back("ç®¡ç†å‘˜");
-    identities.push_back("è¯»è€…");
+    identities.push_back("¹ÜÀíÔ±");
+    identities.push_back("¶ÁÕß");
     int k = 0;
     while (true)
     {
-        MediatePrint("è¯·é€‰æ‹©æ–°ç”¨æˆ·çš„èº«ä»½: \n");
+		ClearScreen();
+        MediatePrint("ÇëÑ¡ÔñĞÂÓÃ»§µÄÉí·İ: \n");
         for (int i = 0; i < 2; ++i)
         {
             if (i == k)
@@ -101,30 +102,30 @@ void Administrator::add_user()
     }
     std::cout << std::setw(WIDTH / 2) << "ID: " << new_id << std::endl;
     std::string new_pwd = RandomPass();
-    MediatePrint("æ­£åœ¨æ‰“å°å¯†ç å•...è¯·ç¨å€™...\n\n");
+    MediatePrint("ÕıÔÚ´òÓ¡ÃÜÂëµ¥...ÇëÉÔºò...\n\n");
     std::string space(10, ' ');
-    std::cout << space << '|' << string(58,'-') << '|' << std::endl;
+    std::cout << space << '|' << std::string(58,'-') << '|' << std::endl;
     Wait();
     std::cout << space << '|' << std::setw(59) << '|' << std::endl;
     Wait();
     std::cout << space << '|' << space + space << "ID: " << new_id << std::setw(34 - int(log10(new_id))) << '|' << std::endl;
     Wait();
-    std::cout << space << '|' << space + space << "å¯†ç : " << new_pwd << std::setw(27) << '|' << std::endl;
+    std::cout << space << '|' << space + space << "ÃÜÂë: " << new_pwd << std::setw(27) << '|' << std::endl;
     Wait();
     std::cout << space << '|' << std::setw(59) << '|' << std::endl;
     Wait();
-    std::cout << space << '|' << string(58,'-') << '|' << std::endl << std::endl;
-    // å¯†ç å•æ‰“å°å®Œæ¯•.
-    MediatePrint("å¯†ç å•æ‰“å°å®Œæ¯•! \n");
-    MediatePrint("è¯·å°½å¿«ä¿®æ”¹å¯†ç ! \n");
-    if (!k)     // ç®¡ç†å‘˜
+    std::cout << space << '|' << std::string(58,'-') << '|' << std::endl << std::endl;
+    // ÃÜÂëµ¥´òÓ¡Íê±Ï.
+    MediatePrint("ÃÜÂëµ¥´òÓ¡Íê±Ï! \n");
+    MediatePrint("Çë¾¡¿ìĞŞ¸ÄÃÜÂë! \n");
+    if (!k)     // ¹ÜÀíÔ±
     {
         Administrator new_admin(new_id, new_pwd);
         new_admin.update();
     }
-    else        // è¯»è€…
+    else        // ¶ÁÕß
     {
-        std::cout << std::setw(WIDTH / 2) << "å§“å: ";
+        std::cout << std::setw(WIDTH / 2) << "ĞÕÃû: ";
         std::string new_name;
         std::cin >> new_name;
         Reader new_reader(new_id, new_pwd, new_name);
@@ -137,24 +138,24 @@ void Administrator::add_user()
 void Administrator::del_user()
 {
     ClearScreen();
-    std::cout << std::setw(WIDTH / 2) << "å­¦å·(å·¥å·): ";
+    std::cout << std::setw(WIDTH / 2) << "Ñ§ºÅ(¹¤ºÅ): ";
     int del_id;
     if (!(std::cin >> del_id))
     {
-        HighlightPrint("è¾“å…¥é”™è¯¯! \n");
+        HighlightPrint("ÊäÈë´íÎó! \n");
         getch();
         return;
     }
     int index = Find(users, del_id);
     if (index < 0)
     {
-        HighlightPrint("ç”¨æˆ·ä¸å­˜åœ¨! \n");
+        HighlightPrint("ÓÃ»§²»´æÔÚ! \n");
         getch();
         return;
     }
-    if (!(users[index]->identity()))    // ç®¡ç†å‘˜
+    if (!(users[index]->identity()))    // ¹ÜÀíÔ±
     {
-        HighlightPrint("æ— æƒè¿›è¡Œæ­¤æ“ä½œ! \n");
+        HighlightPrint("ÎŞÈ¨½øĞĞ´Ë²Ù×÷! \n");
         getch();
         return;
     }
@@ -164,22 +165,22 @@ void Administrator::del_user()
         Reader reader = readers[Find(readers, del_id)];
         if (reader.books(HOLDING).size() != 0 || reader.books(WANTED).size() != 0 || reader.books(OVERDUE).size() != 0)
         {
-            HighlightPrint("è¯¥ç”¨æˆ·è¿˜æœ‰ä¹¦æœªè¿˜! åˆ é™¤å¤±è´¥!\n");
+            HighlightPrint("¸ÃÓÃ»§»¹ÓĞÊéÎ´»¹! É¾³ıÊ§°Ü!\n");
             getch();
             return;
         }
-        MediatePrint("ç¡®è®¤åˆ é™¤? [y/n] ");
+        MediatePrint("È·ÈÏÉ¾³ı? [y/n] \n");
         char tmp = getch();
         if (tmp == 'y' || tmp == 'Y')
         {
             Remove(readers, del_id);
             WriteReaders();
             ReadAll();
-            MediatePrint("ç”¨æˆ·åˆ é™¤æˆåŠŸ!\n")
+            MediatePrint("ÓÃ»§É¾³ı³É¹¦!\n");
             getch();
             return;
         }
-        MediatePrint("ç”¨æˆ·æœªåˆ é™¤!\n");
+        MediatePrint("ÓÃ»§Î´É¾³ı!\n");
         getch();
         return;
     }
@@ -198,9 +199,10 @@ void Administrator::add_book()
     std::string new_isbn, new_name, new_author, new_publish;
     std::cout << std::setw(WIDTH / 2) << "ISBN: ";
     std::cin >> new_isbn;
-    if (new_isbn.size() != 10)
+	std::cin.get();		// ¶Áµô»Ø³µ
+    if (new_isbn.size() != 10 && new_isbn.size() != 13)
     {
-        HighlightPrint("è¾“å…¥é”™è¯¯!\n");
+        HighlightPrint("ÊäÈë´íÎó!\n");
         getch();
         return;
     }
@@ -208,20 +210,20 @@ void Administrator::add_book()
     {
         if (!isdigit(*it))
         {
-            HighlightPrint("è¾“å…¥é”™è¯¯!\n");
+            HighlightPrint("ÊäÈë´íÎó!\n");
             getch();
             return;
         }
     }
-    std::cout << std::setw(WIDTH / 2) << "ä¹¦å: ";
+    std::cout << std::setw(WIDTH / 2) << "ÊéÃû: ";
     getline(std::cin, new_name);
-    std::cout << std::setw(WIDTH / 2) << "ä½œè€…: ";
+    std::cout << std::setw(WIDTH / 2) << "×÷Õß: ";
     getline(std::cin, new_author);
-    std::cout << std::setw(WIDTH / 2) << "å‡ºç‰ˆä¿¡æ¯: ";
+    std::cout << std::setw(WIDTH / 2) << "³ö°æĞÅÏ¢: ";
     getline(std::cin, new_publish);
     Book new_book(new_isbn, new_name, new_author, new_publish);
     new_book.update();
-    MediatePrint("æ·»åŠ æˆåŠŸ!\n");
+    MediatePrint("Ìí¼Ó³É¹¦!\n");
     getch();
     return;
 }
@@ -235,14 +237,14 @@ void Administrator::del_book()
     std::vector<Book> rst = Find(all_books, del_isbn);
     if (rst.size() == 0)
     {
-        HighlightPrint("æœªæ‰¾åˆ°è¯¥ä¹¦!\n");
+        HighlightPrint("Î´ÕÒµ½¸ÃÊé!\n");
         getch();
         return;
     }
     PrintBooks(rst);
-    MediatePrint("ç¡®è®¤ä¸‹æ¶? [yå…¨éƒ¨ä¸‹æ¶; æˆ–è¾“å…¥ç›¸åº”ç´¢å¼•å·] ");
-    char tmp = getch();
-    if (tmp == 'y' || tmp == 'Y')
+    MediatePrint("È·ÈÏÏÂ¼Ü? [yÈ«²¿ÏÂ¼Ü; »òÊäÈëÏàÓ¦Ë÷ÒıºÅ] \n");
+    char ch = getch();
+    if (ch == 'y' || ch == 'Y')
     {
         for (std::vector<Book>::iterator it = rst.begin(); it != rst.end(); ++it)
         {
@@ -251,7 +253,7 @@ void Administrator::del_book()
             {
                 if (iter->state == HOLDING || iter->state == WANTED || iter->state == OVERDUE)
                 {
-                    HighlightPrint("è¯¥ä¹¦ä»æœªè¢«å½’è¿˜! åˆ é™¤å¤±è´¥!\n");
+                    HighlightPrint("¸ÃÊéÈÔÎ´±»¹é»¹! É¾³ıÊ§°Ü!\n");
                     getch();
                     return;
                 }
@@ -260,20 +262,20 @@ void Administrator::del_book()
         Remove(all_books, rst);
         WriteBooks();
         ReadAll();
-        MediatePrint("åˆ é™¤æˆåŠŸ!\n");
+        MediatePrint("É¾³ı³É¹¦!\n");
         getch();
         return;
     }
     int del_index, index;
-    if (!(std::cin >> index))
+    if (!(std::cin >> del_index))
     {
-        HighlightPrint("è¾“å…¥é”™è¯¯!\n");
+        HighlightPrint("ÊäÈë´íÎó!\n");
         getch();
         return;
     }
     if ((index  = Find(all_books, del_isbn, del_index)) < 0)
     {
-        HighlightPrint("è¾“å…¥é”™è¯¯!\n");
+        HighlightPrint("ÊäÈë´íÎó!\n");
         getch();
         return;
     }
@@ -283,7 +285,7 @@ void Administrator::del_book()
     {
         if (it->state == HOLDING || it->state == WANTED || it->state == OVERDUE)
         {
-            HighlightPrint("è¯¥ä¹¦ä»æœªè¢«å½’è¿˜! åˆ é™¤å¤±è´¥!\n");
+            HighlightPrint("¸ÃÊéÈÔÎ´±»¹é»¹! É¾³ıÊ§°Ü!\n");
             getch();
             return;
         }
@@ -291,7 +293,7 @@ void Administrator::del_book()
     Remove(all_books, del_isbn, del_index);
     WriteBooks();
     ReadAll();
-    MediatePrint("åˆ é™¤æˆåŠŸ!\n");
+    MediatePrint("É¾³ı³É¹¦!\n");
     getch();
     return;
 }
@@ -300,7 +302,7 @@ void Administrator::all_user()
 {
     ClearScreen();
     for (std::vector<User*>::iterator it = users.begin(); it != users.end(); ++it)
-        it->print();
+        (*it)->print();
     getch();
     return;
 }
@@ -353,25 +355,14 @@ std::ofstream &operator <<(std::ofstream &out, const Reader &reader)
 {
     out << reader.identity_ << '\n';
     out << reader.id_ << '\n';
-    out << reader.password_ << '\n';
+    out << Encode(reader) << '\n';
     out << reader.name_ << '\n';
     out << reader.credit_ << '\n';
     out << "*\n";
-    for (std::vector<Book>::iterator it = reader.books_.begin(); it != reader.books_.end(); ++it)
+    for (std::vector<Book>::const_iterator it = reader.books_.begin(); it != reader.books_.end(); ++it)
         out << *it;
     out << "#\n\n";
     return out;
-}
-
-std::vector<Book> Reader::books(int state)
-{
-    std::vector<Book> v;
-    for (std::vector<Book>::iterator it = books_.begin(); it != books_.end(); ++it)
-    {
-        if (it->state(id_) == state)
-            v.push_back(*it);
-    }
-    return v;
 }
 
 bool Reader::change_state(Book book, int state)
@@ -381,10 +372,21 @@ bool Reader::change_state(Book book, int state)
         if (*it == book)
         {
             it->change_state(id_, state);
+			update();
             return true;
         }
     }
     return false;
+}
+
+void Reader::add_book(Book book) 
+{ 
+	books_.push_back(book); 
+}
+
+void Reader::del_book(Book book) 
+{ 
+	Remove(books_, book); 
 }
 
 std::vector<Book> Reader::books(int state)
@@ -412,7 +414,7 @@ void Reader::recommended()
     std::vector<Book> recommended = HotBook(5);
     if (recommended.size() == 0)
     {
-        MediatePrint("é¦†é•¿è¿˜æ²¡æœ‰æ¨èä»€ä¹ˆå¥½ä¹¦å“¦!\n");
+        MediatePrint("¹İ³¤»¹Ã»ÓĞÍÆ¼öÊ²Ã´ºÃÊéÅ¶!\n");
         getch();
         return;
     }
@@ -441,12 +443,14 @@ void Reader::recommended()
             Book target = recommended[k];
             target.print();
             target.display_now_state();
-            MediatePrint("å€Ÿé˜…/é¢„çº¦æ­¤ä¹¦? [y/n] ");
+            MediatePrint("½èÔÄ/Ô¤Ô¼´ËÊé? [y/n] \n");
             int tmp = getch();
             if (tmp == 'y' || tmp == 'Y')
             {
                 target.wanted(id_);
             }
+			getch();
+			return;
         }
         while (ch != 224)
             ;
@@ -481,6 +485,12 @@ void Reader::give_back()
     can_return.insert(can_return.end(), tmp.begin(), tmp.end());
     tmp = books(OVERDUE);
     can_return.insert(can_return.end(), tmp.begin(), tmp.end());
+	if (can_return.size() == 0)
+	{
+		MediatePrint("ÄúÃ»ÓĞĞèÒª»¹µÄÊé!\n");
+		getch();
+		return;
+	}
     std::vector<std::string> book_names;
     for (std::vector<Book>::iterator it = can_return.begin(); it != can_return.end(); ++it)
     {
@@ -506,12 +516,14 @@ void Reader::give_back()
             Book target = can_return[k];
             target.print();
             target.display_now_state();
-            MediatePrint("å½’è¿˜æ­¤ä¹¦? [y/n] ");
+            MediatePrint("¹é»¹´ËÊé? [y/n] \n");
             int tmp = getch();
             if (tmp == 'y' || tmp == 'Y')
             {
                 target.give_back(id_);
             }
+			getch();
+			return;
         }
         while (ch != 224)
             ;
@@ -539,11 +551,15 @@ void Reader::give_back()
 void Reader::search()
 {
     ClearScreen();
-    std::cout << std::setw(WIDTH / 2) << "å…³é”®è¯/ISBN: ";
+    std::cout << std::setw(WIDTH / 2) << "¹Ø¼ü´Ê/ISBN: ";
     std::vector<std::string> keywords;
     std::string tmp;
-    while (std::cin >> tmp && std::cin.get() != '\n')
+    while (std::cin >> tmp)
+	{
         keywords.push_back(tmp);
+		if (std::cin.get() == '\n')
+			break;
+	}
     std::vector<Book> search_result;
     for (std::vector<Book>::iterator it = all_books.begin(); it != all_books.end(); ++it)
     {
@@ -578,12 +594,14 @@ void Reader::search()
             Book target = search_result[k];
             target.print();
             target.display_now_state();
-            MediatePrint("å€Ÿé˜…/é¢„çº¦æ­¤ä¹¦? [y/n] ");
+            MediatePrint("½èÔÄ/Ô¤Ô¼´ËÊé? [y/n] \n");
             int tmp = getch();
             if (tmp == 'y' || tmp == 'Y')
             {
                 target.wanted(id_);
             }
+			getch();
+			return;
         }
         while (ch != 224)
             ;

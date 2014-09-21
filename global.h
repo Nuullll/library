@@ -1,11 +1,12 @@
 // global.h
+
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include "user.h"
 #include <vector>
 #include <iomanip>
 #include <iostream>
-#include "user.h"
 #include <cmath>
 #include <thread>
 #include <chrono>
@@ -13,45 +14,42 @@
 extern std::vector<User*> users;
 extern std::vector<Administrator> admins;
 extern std::vector<Reader> readers;
-extern std::vector<Book> all_books;     // ä¸Reader::books_åŒºåˆ†
+extern std::vector<Book> all_books;     // ÓëReader::books_Çø·Ö
 
 const int UP = 72;
 const int DOWN = 80;
 const int LEFT = 75;
 const int RIGHT = 77;
 
-const int WIDTH = 80;
-
 const int SECONDS_A_DAY = 24 * 3600;
 
 bool CompareHot(Book b1, Book b2);
-bool HighlightPrint(int setw, std::string text, int color);
+bool HighlightPrint(int setw, std::string text, int color = 9);
 bool HighlightPrint(std::string text, int color = 9);
-bool IsChineseChar(unsigned char lo, unsigned char hi);
-bool ValidPassword(std::string pwd);    // æ£€æŸ¥æ˜¯å¦ç¬¦åˆ6~15ä½æ•°å­—å­—æ¯å¯†ç æ ‡å‡†
+bool ValidPassword(std::string pwd);    // ¼ì²éÊÇ·ñ·ûºÏ6~15Î»Êı×Ö×ÖÄ¸ÃÜÂë±ê×¼
 int Find(std::vector<Book> v, std::string isbn, int index);
-int Find(std::vector<User*> v, int id);     // è¿”å›vectorä¸­æ‰¾åˆ°çš„ç´¢å¼•, æœªæ‰¾åˆ°åˆ™è¿”å›-1
-std::string Decode(int id, std::string cipher); // è§£å¯†
-std::string GetPass();      // è¾“å…¥å¯†ç 
-std::string RandomPass(int digits = 6);     // è¿”å›digitsä½éšæœºå¯†ç 
+int Find(std::vector<User*> v, int id);     // ·µ»ØvectorÖĞÕÒµ½µÄË÷Òı, Î´ÕÒµ½Ôò·µ»Ø-1
+std::string Decode(int id, std::string cipher); // ½âÃÜ
+std::string GetPass();      // ÊäÈëÃÜÂë
+std::string RandomPass(int digits = 6);     // ·µ»ØdigitsÎ»Ëæ»úÃÜÂë
 std::vector<Book> Find(std::vector<Book> v, std::string isbn);
-std::vector<Book> HotBook(int num = 3);    // å€Ÿé˜…æ’è¡Œæ¦œ
-Token Login();              // ç™»å½•, è¿”å›ä»¤ç‰Œ
-void ClearScreen();         // ä¿ç•™æ ‡é¢˜çš„æ¸…å±å‡½æ•°
-void EBook();               // ç”µå­èµ„æºç•Œé¢
-void Exit();                // é€€å‡ºç³»ç»Ÿ
-void MediatePrint(std::string text);    // å±…ä¸­æ‰“å°å­—ç¬¦ä¸²
+std::vector<Book> HotBook(int num = 3);    // ½èÔÄÅÅĞĞ°ñ
+Token Login();              // µÇÂ¼, ·µ»ØÁîÅÆ
+void ClearScreen();         // ±£Áô±êÌâµÄÇåÆÁº¯Êı
+void EBook();               // µç×Ó×ÊÔ´½çÃæ
+void Exit();                // ÍË³öÏµÍ³
+void MediatePrint(std::string text);    // ¾ÓÖĞ´òÓ¡×Ö·û´®
 void PrintBooks(std::vector<Book> v);
 void PrintBooksOfReader(std::vector<Book> v, int reader_id);
 void Remove(std::vector<Book> &v, std::string isbn, int index);
 void Remove(std::vector<Book> &v, std::vector<Book> dels);
-void Scroll(std::string text);  // æ»šåŠ¨æ’­æ”¾æ–‡æœ¬
-void Title();               // ç³»ç»Ÿæ ‡é¢˜
-void Wait(int milliseconds = 1000);  // ç­‰å¾…æ¯«ç§’æ•°
-void Welcome();             // æ¬¢è¿ç•Œé¢
+void Scroll(std::string text);  // ¹ö¶¯²¥·ÅÎÄ±¾
+void Title();               // ÏµÍ³±êÌâ
+void Wait(int milliseconds = 1000);  // µÈ´ıºÁÃëÊı
+void Welcome();             // »¶Ó­½çÃæ
 
 template <class T>
-std::string Encode(T user)      // åŠ å¯†
+std::string Encode(T user)      // ¼ÓÃÜ
 {
     int id = user.id_;
     std::string clear = user.password_;
