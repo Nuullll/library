@@ -15,6 +15,14 @@ std::vector<Administrator> admins;
 std::vector<Reader> readers;
 std::vector<Book> all_books;
 
+Key MyGetCh()
+{
+	int ch = getch();
+	if (kbhit())
+		return std::make_pair(2, getch());
+	return std::make_pair(1, ch);
+}
+
 bool CompareHot(Book b1, Book b2)
 {
     return (b1.info().size() > b2.info().size());
@@ -212,7 +220,12 @@ Token Login()
     int id;
     std::string pwd;
     std::cout << std::setw(WIDTH / 2) << "请输入您的学号(工号): ";
-    std::cin >> id;
+    if (!(std::cin >> id))
+	{
+		std::cin.clear();
+		std::cin.sync();
+		return Token(-1, "");
+	}
     std::cout << std::setw(WIDTH / 2) << "请输入您的密码: ";
     pwd = GetPass();
     return Token(id, pwd);
@@ -227,15 +240,15 @@ void ClearScreen()
 void EBook()
 {
     HighlightPrint("请登录 http://lib.tsinghua.edu.cn 访问查阅电子资源库!");
-	getch();
+	MyGetCh();
 }
 
 void Exit()
 {
     ClearScreen();
     MediatePrint("确认退出? [y/n] \n");
-    char ch = getch();
-    if (ch == 'y' || ch == 'Y')
+    Key ch = MyGetCh();
+    if (ch == std::make_pair(1, 'y') || ch == std::make_pair(1, 'Y'))
     {
         MediatePrint("再见! \n");
         exit(1);

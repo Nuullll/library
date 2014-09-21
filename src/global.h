@@ -10,19 +10,26 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
+#include <utility>
 
 extern std::vector<User*> users;
 extern std::vector<Administrator> admins;
 extern std::vector<Reader> readers;
 extern std::vector<Book> all_books;     // ÓëReader::books_Çø·Ö
 
-const int UP = 72;
-const int DOWN = 80;
-const int LEFT = 75;
-const int RIGHT = 77;
+typedef std::pair<int, char> Key;	// first = times, second = ch;
+
+const Key ENTER = std::make_pair(1, char(13));
+const Key ESCAPE = std::make_pair(1, char(27));
+const Key UP = std::make_pair(2, char(72));
+const Key DOWN = std::make_pair(2, char(80));
+const Key LEFT = std::make_pair(2, char(75));
+const Key RIGHT = std::make_pair(2, char(77));
+
 
 const int SECONDS_A_DAY = 24 * 3600;
 
+Key MyGetCh();
 bool CompareHot(Book b1, Book b2);
 bool HighlightPrint(int setw, std::string text, int color = 9);
 bool HighlightPrint(std::string text, int color = 9);
